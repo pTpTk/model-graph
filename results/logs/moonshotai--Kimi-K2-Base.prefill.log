@@ -1,0 +1,6 @@
+model-graph: Loading configuration for moonshotai/Kimi-K2-Base
+model-graph: Loading configuration for moonshotai/Kimi-K2-Base: done (0.2s)
+model-graph: Constructing model on meta device (no weight storage)
+model-graph: Constructing model on meta device (no weight storage): done (0.2s)
+model-graph: Recording model operations with shape-only tensors
+model-graph: Recording model operations with shape-only tensors: done (4.2s)

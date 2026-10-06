@@ -1,0 +1,332 @@
+{
+  "batch": 32,
+  "seq_len": 8192,
+  "models": [
+    {
+      "model_id": "zai-org/GLM-4.5-Base",
+      "slug": "zai-org--GLM-4.5-Base",
+      "revision": "922a0cee7f137cf3b64c186f0bee77882e4a4e80",
+      "model_type": "glm4_moe",
+      "text_model_type": null,
+      "architectures": [
+        "Glm4MoeForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/zai-org--GLM-4.5-Base/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "zai-org/GLM-4.5-Air-Base",
+      "slug": "zai-org--GLM-4.5-Air-Base",
+      "revision": "888c873d4eca81f28d0ef420aa2d96457c28b959",
+      "model_type": "glm4_moe",
+      "text_model_type": null,
+      "architectures": [
+        "Glm4MoeForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/zai-org--GLM-4.5-Air-Base/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "zai-org/GLM-5",
+      "slug": "zai-org--GLM-5",
+      "revision": "c183ef8c61faee82855eca1ed9bb3a9a7ce3b0b2",
+      "model_type": "glm_moe_dsa",
+      "text_model_type": null,
+      "architectures": [
+        "GlmMoeDsaForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/zai-org--GLM-5/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "zai-org/GLM-5.3",
+      "slug": "zai-org--GLM-5.3",
+      "revision": "aca966e4e02791568aa6a4ced368624b3d897f42",
+      "model_type": "glm_moe_dsa",
+      "text_model_type": null,
+      "architectures": [
+        "GlmMoeDsaForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/zai-org--GLM-5.3/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "zai-org/GLM-5.3-Flash",
+      "slug": "zai-org--GLM-5.3-Flash",
+      "revision": "eb9eb208eb0d988989d07a6a12d0fdeb5f52574a",
+      "model_type": "glm5_next",
+      "text_model_type": "glm5_next_text",
+      "architectures": [
+        "Glm5NextForConditionalGeneration"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/zai-org--GLM-5.3-Flash/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "moonshotai/Kimi-K3",
+      "slug": "moonshotai--Kimi-K3",
+      "revision": "f831ab66814297da540d832a5235f8e904f29d06",
+      "model_type": "kimi_k3",
+      "text_model_type": "kimi_linear",
+      "architectures": [
+        "KimiK3ForConditionalGeneration"
+      ],
+      "auto_map": {
+        "AutoConfig": "configuration_kimi_k3.KimiK3Config",
+        "AutoModel": "modeling_kimi_k3.KimiK3ForConditionalGeneration",
+        "AutoModelForCausalLM": "modeling_kimi_k3.KimiK3ForConditionalGeneration"
+      },
+      "config_path": "results/configs/moonshotai--Kimi-K3/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "moonshotai/Kimi-K2-Base",
+      "slug": "moonshotai--Kimi-K2-Base",
+      "revision": "ce72df012259dcc55d945e890f815fe7ef69159c",
+      "model_type": "kimi_k2",
+      "text_model_type": null,
+      "architectures": [
+        "DeepseekV3ForCausalLM"
+      ],
+      "auto_map": {
+        "AutoConfig": "configuration_deepseek.DeepseekV3Config",
+        "AutoModel": "modeling_deepseek.DeepseekV3Model",
+        "AutoModelForCausalLM": "modeling_deepseek.DeepseekV3ForCausalLM"
+      },
+      "config_path": "results/configs/moonshotai--Kimi-K2-Base/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "moonshotai/Kimi-Linear-48B-A3B-Base",
+      "slug": "moonshotai--Kimi-Linear-48B-A3B-Base",
+      "revision": "3b171c17bfc4ee348599b6781a2ca8715c21c8dc",
+      "model_type": "kimi_linear",
+      "text_model_type": null,
+      "architectures": [
+        "KimiLinearForCausalLM"
+      ],
+      "auto_map": {
+        "AutoConfig": "configuration_kimi.KimiLinearConfig",
+        "AutoModel": "modeling_kimi.KimiLinearModel",
+        "AutoModelForCausalLM": "modeling_kimi.KimiLinearForCausalLM"
+      },
+      "config_path": "results/configs/moonshotai--Kimi-Linear-48B-A3B-Base/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "Qwen/Qwen3.8-2.4T-A95B",
+      "slug": "Qwen--Qwen3.8-2.4T-A95B",
+      "revision": "207bd685a7e3696cfaff12ded7c6a7ea0f88c996",
+      "model_type": "qwen3_5_moe_text",
+      "text_model_type": null,
+      "architectures": [
+        "Qwen3_5MoeForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/Qwen--Qwen3.8-2.4T-A95B/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "Qwen/Qwen3.8-Flash-Next",
+      "slug": "Qwen--Qwen3.8-Flash-Next",
+      "revision": "de4b8e4d43b917e7706784d8bb445c9af86a3540",
+      "model_type": "qwen4_exp",
+      "text_model_type": "qwen4_exp_text",
+      "architectures": [
+        "Qwen4ExpForConditionalGeneration"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/Qwen--Qwen3.8-Flash-Next/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V3-Base",
+      "slug": "deepseek-ai--DeepSeek-V3-Base",
+      "revision": "afb92e1fa402c2be2a9eb085312bb02e0384d6c7",
+      "model_type": "deepseek_v3",
+      "text_model_type": null,
+      "architectures": [
+        "DeepseekV3ForCausalLM"
+      ],
+      "auto_map": {
+        "AutoConfig": "configuration_deepseek.DeepseekV3Config",
+        "AutoModel": "modeling_deepseek.DeepseekV3Model",
+        "AutoModelForCausalLM": "modeling_deepseek.DeepseekV3ForCausalLM"
+      },
+      "config_path": "results/configs/deepseek-ai--DeepSeek-V3-Base/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V3.2",
+      "slug": "deepseek-ai--DeepSeek-V3.2",
+      "revision": "a7e62ac04ecb2c0a54d736dc46601c5606cf10a6",
+      "model_type": "deepseek_v32",
+      "text_model_type": null,
+      "architectures": [
+        "DeepseekV32ForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/deepseek-ai--DeepSeek-V3.2/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V4-Pro-Base",
+      "slug": "deepseek-ai--DeepSeek-V4-Pro-Base",
+      "revision": "98730c030fbdbaca4950788280a35c4642b208a9",
+      "model_type": "deepseek_v4",
+      "text_model_type": null,
+      "architectures": [
+        "DeepseekV4ForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/deepseek-ai--DeepSeek-V4-Pro-Base/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V4-Flash-Base",
+      "slug": "deepseek-ai--DeepSeek-V4-Flash-Base",
+      "revision": "8855555deef230a27a21a8d6f294b7b7497759b6",
+      "model_type": "deepseek_v4",
+      "text_model_type": null,
+      "architectures": [
+        "DeepseekV4ForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/deepseek-ai--DeepSeek-V4-Flash-Base/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "slug": "deepseek-ai--DeepSeek-V4.1-Flash",
+      "revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+      "model_type": "deepseek_v41",
+      "text_model_type": "deepseek_v41_text",
+      "architectures": [
+        "DeepseekV41ForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/deepseek-ai--DeepSeek-V4.1-Flash/config.json",
+      "status": "config_ready",
+      "unsupported_reason": "Installed Transformers lacks deepseek_v41 / deepseek_v41_text support. Official inference uses custom CUDA kernels and an additional Engram/vision architecture; no faithful shape adapter is provided."
+    },
+    {
+      "model_id": "MiniMaxAI/MiniMax-M3",
+      "slug": "MiniMaxAI--MiniMax-M3",
+      "revision": "f0e1c1e04d40177e4673a22097036854f536e9c0",
+      "model_type": "minimax_m3_vl",
+      "text_model_type": null,
+      "architectures": [
+        "MiniMaxM3SparseForConditionalGeneration"
+      ],
+      "auto_map": {
+        "AutoConfig": "configuration_minimax_m3_vl.MiniMaxM3VLConfig"
+      },
+      "config_path": "results/configs/MiniMaxAI--MiniMax-M3/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "MiniMaxAI/MiniMax-M2.7",
+      "slug": "MiniMaxAI--MiniMax-M2.7",
+      "revision": "d494266a4affc0d2995ba1fa35c8481cbd84294b",
+      "model_type": "minimax_m2",
+      "text_model_type": null,
+      "architectures": [
+        "MiniMaxM2ForCausalLM"
+      ],
+      "auto_map": {
+        "AutoConfig": "configuration_minimax_m2.MiniMaxM2Config",
+        "AutoModelForCausalLM": "modeling_minimax_m2.MiniMaxM2ForCausalLM"
+      },
+      "config_path": "results/configs/MiniMaxAI--MiniMax-M2.7/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "openai/gpt-oss-120b",
+      "slug": "openai--gpt-oss-120b",
+      "revision": "b5c939de8f754692c1647ca79fbf85e8c1e70f8a",
+      "model_type": "gpt_oss",
+      "text_model_type": null,
+      "architectures": [
+        "GptOssForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/openai--gpt-oss-120b/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "Qwen/Qwen3.8-27B",
+      "slug": "Qwen--Qwen3.8-27B",
+      "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+      "model_type": "qwen3_5",
+      "text_model_type": "qwen3_5_text",
+      "architectures": [
+        "Qwen3_5ForConditionalGeneration"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/Qwen--Qwen3.8-27B/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "Qwen/Qwen3.8-27B-FP8",
+      "slug": "Qwen--Qwen3.8-27B-FP8",
+      "revision": "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+      "model_type": "qwen3_5",
+      "text_model_type": "qwen3_5_text",
+      "architectures": [
+        "Qwen3_5ForConditionalGeneration"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/Qwen--Qwen3.8-27B-FP8/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "Qwen/Qwen3.5-397B-A17B",
+      "slug": "Qwen--Qwen3.5-397B-A17B",
+      "revision": "8472618112abcbd45acbcdc58436aff4233c23f7",
+      "model_type": "qwen3_5_moe",
+      "text_model_type": "qwen3_5_moe_text",
+      "architectures": [
+        "Qwen3_5MoeForConditionalGeneration"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/Qwen--Qwen3.5-397B-A17B/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "slug": "Qwen--Qwen3-Next-80B-A3B-Instruct",
+      "revision": "9c7f2fbe84465e40164a94cc16cd30b6999b0cc7",
+      "model_type": "qwen3_next",
+      "text_model_type": null,
+      "architectures": [
+        "Qwen3NextForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/Qwen--Qwen3-Next-80B-A3B-Instruct/config.json",
+      "status": "config_ready"
+    },
+    {
+      "model_id": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "slug": "Qwen--Qwen3-235B-A22B-Instruct-2507",
+      "revision": "ac9c66cc9b46af7306746a9250f23d47083d689e",
+      "model_type": "qwen3_moe",
+      "text_model_type": null,
+      "architectures": [
+        "Qwen3MoeForCausalLM"
+      ],
+      "auto_map": null,
+      "config_path": "results/configs/Qwen--Qwen3-235B-A22B-Instruct-2507/config.json",
+      "status": "config_ready"
+    }
+  ],
+  "scope_notes": [
+    "Step and Mistral excluded at user request.",
+    "MiniMax-H3 excluded because it is a video/audio generation model, outside text inference scope.",
+    "Nemotron excluded at user request."
+  ]
+}

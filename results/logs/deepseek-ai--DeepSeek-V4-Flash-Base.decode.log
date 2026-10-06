@@ -1,0 +1,6 @@
+model-graph: Loading configuration for deepseek-ai/DeepSeek-V4-Flash-Base
+model-graph: Loading configuration for deepseek-ai/DeepSeek-V4-Flash-Base: done (0.0s)
+model-graph: Constructing model on meta device (no weight storage)
+model-graph: Constructing model on meta device (no weight storage): done (0.7s)
+model-graph: Preparing cache shapes and recording one-token decode
+model-graph: Preparing cache shapes and recording one-token decode: done (17.8s)

@@ -1,0 +1,6 @@
+model-graph: Loading configuration for moonshotai/Kimi-K3
+model-graph: Loading configuration for moonshotai/Kimi-K3: done (0.1s)
+model-graph: Constructing model on meta device (no weight storage)
+model-graph: Constructing model on meta device (no weight storage): done (0.7s)
+model-graph: Preparing cache shapes and recording one-token decode
+model-graph: Preparing cache shapes and recording one-token decode: done (14.2s)

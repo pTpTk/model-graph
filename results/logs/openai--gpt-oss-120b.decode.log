@@ -1,0 +1,6 @@
+model-graph: Loading configuration for openai/gpt-oss-120b
+model-graph: Loading configuration for openai/gpt-oss-120b: done (0.0s)
+model-graph: Constructing model on meta device (no weight storage)
+model-graph: Constructing model on meta device (no weight storage): done (0.4s)
+model-graph: Preparing cache shapes and recording one-token decode
+model-graph: Preparing cache shapes and recording one-token decode: done (3.6s)

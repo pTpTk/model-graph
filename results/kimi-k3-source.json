@@ -1,0 +1,17 @@
+{
+  "model_id": "moonshotai/Kimi-K3",
+  "revision": "f831ab66814297da540d832a5235f8e904f29d06",
+  "files": {
+    "modeling_kimi_linear.py": "9e3564c70ac21854ce5a090cc946c5dc76b70d1050ef50840449181a20fff44a",
+    "configuration_kimi_k3.py": "735eb9ebe593e17d231e08e1df7f7be9b5ee0e079f511aa201f9572077b416ae"
+  },
+  "adapter": "kimi_k3_graph.py",
+  "changes": [
+    "text-only wrapper and all-valid causal mask",
+    "mathematical causal convolution and gated RMS normalization",
+    "packed expert weight dimensions and shape-only dispatch",
+    "KDA boundary shape contract; no fused backend kernels",
+    "retained SiTU, latent MoE, MLA output gate and attention residual equations"
+  ],
+  "adapter_sha256": "c64ff1d59649b42eea6475774485c20a56b774dfebfb2689a9e4a8b72db68e8f"
+}

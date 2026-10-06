@@ -1,0 +1,9 @@
+model-graph: Loading configuration for moonshotai/Kimi-Linear-48B-A3B-Base
+model-graph: Loading configuration for moonshotai/Kimi-Linear-48B-A3B-Base: done (0.0s)
+model-graph: Constructing model on meta device (no weight storage)
+model-graph: Constructing model on meta device (no weight storage): done (0.3s)
+model-graph: Recording model operations with shape-only tensors
+[transformers] `causal_conv1d_fn` is falling back to its reference PyTorch implementation because `causal_conv1d` is not installed. This is correct but much slower; install `causal_conv1d` for the optimized kernel.
+[transformers] `chunk_kda` is falling back to its reference PyTorch implementation because `flash-linear-attention` is not installed. This is correct but much slower; install `flash-linear-attention` for the optimized kernel.
+model-graph: Recording model operations with shape-only tensors: still running (30s elapsed)
+model-graph: Recording model operations with shape-only tensors: done (58.3s)

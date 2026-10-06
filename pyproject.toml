@@ -13,4 +13,4 @@ dependencies = ["torch>=2.6", "transformers>=4.45,<6"]
 model-graph = "model_graph:main"
 
 [tool.setuptools]
-py-modules = ["model_graph", "model_ops"]
+py-modules = ["model_graph", "model_ops", "kimi_k3_graph"]

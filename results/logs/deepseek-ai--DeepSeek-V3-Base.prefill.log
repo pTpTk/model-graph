@@ -1,0 +1,6 @@
+model-graph: Loading configuration for deepseek-ai/DeepSeek-V3-Base
+model-graph: Loading configuration for deepseek-ai/DeepSeek-V3-Base: done (0.0s)
+model-graph: Constructing model on meta device (no weight storage)
+model-graph: Constructing model on meta device (no weight storage): done (0.3s)
+model-graph: Recording model operations with shape-only tensors
+model-graph: Recording model operations with shape-only tensors: done (4.0s)
