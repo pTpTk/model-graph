@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "model-graph"
+version = "0.1.0"
+description = "Print Hugging Face model execution graphs with tensor dimensions"
+requires-python = ">=3.10"
+dependencies = ["torch>=2.6", "transformers>=4.45,<6"]
+
+[project.scripts]
+model-graph = "model_graph:main"
+
+[tool.setuptools]
+py-modules = ["model_graph", "model_ops"]
