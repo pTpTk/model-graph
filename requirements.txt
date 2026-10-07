@@ -1,0 +1,3 @@
+# Runtime dependencies; install the CLI with: python -m pip install -e .
+torch>=2.6
+transformers>=4.45,<6

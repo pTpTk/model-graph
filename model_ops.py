@@ -1,6 +1,7 @@
 """Record a module-level execution graph using storage-free shape propagation."""
 
 from dataclasses import dataclass, field
+from contextlib import contextmanager
 import inspect
 import weakref
 
@@ -74,6 +75,40 @@ def output_cache(output):
     return cache
 
 
+@contextmanager
+def model_shape_contracts(model, expert_forward=None):
+    """Temporarily replace reviewed data-dependent boundaries; restore on failure."""
+    patched, paths = [], []
+    try:
+        for path, module in model.named_modules():
+            if type(module).__name__ not in EXPERT_SHAPE_CLASSES | INDEXER_SHAPE_CLASSES:
+                continue
+            original = module.forward
+            signature = inspect.signature(original)
+            had_instance_forward = "forward" in vars(module)
+            if type(module).__name__ in INDEXER_SHAPE_CLASSES:
+                def shape_forward(*args, _module=module, _signature=signature, **kwargs):
+                    arguments = _signature.bind(*args, **kwargs).arguments
+                    return indexer_shape_forward(_module, arguments["hidden_states"],
+                                                 arguments["attention_mask"], arguments.get("past_key_values"))
+            else:
+                def shape_forward(hidden_states, *args, _module=module, **kwargs):
+                    if expert_forward is not None:
+                        return expert_forward(_module, hidden_states, args, kwargs)
+                    return torch.empty_like(hidden_states)
+            shape_forward.__signature__ = signature
+            module.forward = shape_forward
+            patched.append((module, original, had_instance_forward))
+            paths.append(path)
+        yield paths
+    finally:
+        for module, original, had_instance_forward in patched:
+            if had_instance_forward:
+                module.forward = original
+            else:
+                del module.forward
+
+
 @dataclass
 class Step:
     number: int
@@ -140,6 +175,11 @@ def module_label(module, path):
 def operation_label(func):
     """Use mathematical names, without backend overload or kernel names."""
     name = func._schema.name.split("::")[-1]
+    return operation_name_label(name)
+
+
+def operation_name_label(name):
+    """Share mathematical operation names between eager and compiler graphs."""
     labels = {
         "add": "Add", "sub": "Subtract", "mul": "Multiply", "div": "Divide",
         "mm": "MatMul", "bmm": "MatMul", "matmul": "MatMul", "addmm": "Linear",
@@ -149,6 +189,11 @@ def operation_label(func):
         "_to_copy": "Cast", "alias": "Alias", "detach": "Detach",
         "copy_": "Copy", "slice": "Slice", "select": "Select",
         "native_layer_norm": "LayerNorm", "rsqrt": "ReciprocalSqrt",
+        "to": "Cast", "float": "Cast", "half": "Cast", "bfloat16": "Cast",
+        "getitem": "Select", "topk": "TopK", "expert_dispatch": "ExpertDispatch",
+        "__and__": "LogicalAnd", "__or__": "LogicalOr",
+        "fused_add_rms_norm": "FusedAddRMSNorm", "rope_kv_cache": "RoPEAndKVCache",
+        "native_attention": "NativeAttention", "topk_softmax": "TopKSoftmax",
     }
     if "scaled_dot_product" in name:
         return "ScaledDotProductAttention"
@@ -372,30 +417,9 @@ class ModuleGraph(TorchDispatchMode):
             self.add_placeholder("p_" + name.replace(".", "_"), "parameter", parameter, name)
         for name, buffer in self.model.named_buffers():
             self.add_placeholder("b_" + name.replace(".", "_"), "buffer", buffer, name)
-        patched = []
-        for path, module in self.model.named_modules():
-            if type(module).__name__ not in EXPERT_SHAPE_CLASSES | INDEXER_SHAPE_CLASSES:
-                continue
-            original = module.forward
-            had_instance_forward = "forward" in vars(module)
-            if type(module).__name__ in INDEXER_SHAPE_CLASSES:
-                signature = inspect.signature(original)
-                def shape_forward(*args, _module=module, _signature=signature, **kwargs):
-                    arguments = _signature.bind(*args, **kwargs).arguments
-                    return indexer_shape_forward(_module, arguments["hidden_states"],
-                                                 arguments["attention_mask"], arguments.get("past_key_values"))
-            else:
-                def shape_forward(hidden_states, *args, **kwargs):
-                    # The reviewed native expert interfaces scatter their contributions
-                    # back into this same hidden-state shape. Routing values and the
-                    # per-expert token count cannot be determined from meta tensors.
-                    return torch.empty_like(hidden_states)
-            shape_forward.__signature__ = inspect.signature(original)
-            module.forward = shape_forward
-            patched.append((module, original, had_instance_forward))
-            self.shape_contracts.append(path)
         try:
-            with torch.no_grad(), FakeTensorMode(allow_non_fake_inputs=True, allow_fallback_kernels=False) as fake_mode:
+            with model_shape_contracts(self.model) as paths, torch.no_grad(), FakeTensorMode(allow_non_fake_inputs=True, allow_fallback_kernels=False) as fake_mode:
+                self.shape_contracts.extend(paths)
                 def fake_arguments(arguments):
                     return {
                         name: fake_mode.from_tensor(value) if isinstance(value, torch.Tensor) else value
@@ -434,11 +458,6 @@ class ModuleGraph(TorchDispatchMode):
             for hook in self.hooks:
                 hook.remove()
             self.hooks.clear()
-            for module, original, had_instance_forward in patched:
-                if had_instance_forward:
-                    module.forward = original
-                else:
-                    del module.forward
         return self
 
     def print(self, stream):

@@ -1,0 +1,6 @@
+model-graph: Loading configuration for results/configs/openai--gpt-oss-120b
+model-graph: Loading configuration for results/configs/openai--gpt-oss-120b: done (0.0s)
+model-graph: Constructing model on meta device (no weight storage)
+model-graph: Constructing model on meta device (no weight storage): done (0.0s)
+model-graph: Capturing torch.compile FX graph with shape-only tensors
+model-graph: Capturing torch.compile FX graph with shape-only tensors: done (2.9s)

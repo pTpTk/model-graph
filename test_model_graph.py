@@ -250,6 +250,215 @@ class PhaseGraphTests(unittest.TestCase):
         self.assertIn("Tensor(shape=(32, 16)",output.splitlines()[-1])
 
 
+class CompiledGraphTests(unittest.TestCase):
+    def run_compiled(self, config, phase="prefill", extra_args=()):
+        with tempfile.TemporaryDirectory() as directory:
+            config.save_pretrained(directory)
+            result = subprocess.run(
+                [sys.executable, "-m", "model_graph", directory,
+                 "--batch", "2", "--seq-len", "8", "--phase", phase,
+                 "--compile", "--local-files-only", *extra_args],
+                text=True, capture_output=True, timeout=120,
+                env={**os.environ, "HF_HUB_OFFLINE": "1"},
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("torch.compile FX graph; fullgraph=True, dynamic=False", result.stdout)
+        self.assertIn("Capturing torch.compile FX graph with shape-only tensors: done", result.stderr)
+        self.assertIn("[step ", result.stdout)
+        for line in result.stdout.splitlines():
+            if "[step " in line:
+                self.assertIn("stages=[", line)
+            if " op=" in line:
+                self.assertRegex(line, r"\[step \d+\] \w+ \[.*\] .* -> ")
+        self.assertTrue(result.stdout.splitlines()[-1].startswith("return "))
+        return result.stdout
+
+    def test_compiled_llama_prefill_has_parameters_and_shapes(self):
+        output = self.run_compiled(LlamaConfig(
+            vocab_size=64, hidden_size=16, intermediate_size=32,
+            num_hidden_layers=1, num_attention_heads=2, num_key_value_heads=1,
+            dtype="bfloat16",
+        ))
+        self.assertIn("user_input input_ids -> Tensor(shape=(2, 8), dtype=torch.int64)", output)
+        self.assertIn("parameter model.embed_tokens.weight -> Tensor(shape=(64, 16), dtype=torch.bfloat16)", output)
+        self.assertIn("Tensor(shape=(2, 8, 64), dtype=torch.bfloat16)", output)
+        self.assertIn("torch.nn.functional.embedding", output)
+        self.assertNotIn("cache_input", output)
+
+    @unittest.skipUnless(hasattr(transformers, "GptOssConfig"), "Requires gpt-oss support")
+    def test_gpt_oss_compiled_decode_cache_and_expert_dependencies(self):
+        config = transformers.GptOssConfig(
+            vocab_size=64, hidden_size=16, intermediate_size=32,
+            num_hidden_layers=2, num_attention_heads=2, num_key_value_heads=1,
+            head_dim=8, num_local_experts=4, num_experts_per_tok=2,
+            sliding_window=4, layer_types=["sliding_attention", "full_attention"],
+            quantization_config={"quant_method": "mxfp4"},
+        )
+        output = self.run_compiled(config, "decode")
+        self.assertIn("phase=decode", output)
+        self.assertIn("user_input input_ids -> Tensor(shape=(2, 1), dtype=torch.int64)", output)
+        self.assertIn("cache_input past_key_values.layers.0.keys -> Tensor(shape=(2, 1, 3, 8))", output)
+        self.assertIn("cache_input past_key_values.layers.1.keys -> Tensor(shape=(2, 1, 8, 8))", output)
+        updated = next(line for line in output.splitlines() if line.startswith("%updated_past_key_values ="))
+        self.assertRegex(updated, r"'past_key_values.layers.1.keys': %s\d+_\d+ Tensor\(shape=\(2, 1, 9, 8\)\)")
+        self.assertIn("Tensor(shape=(2, 1, 64))", output)
+        self.assertIn("tokens_per_expert=data-dependent", output)
+        experts = [line for line in output.splitlines() if " op=model_graph.expert_dispatch.default(" in line]
+        self.assertEqual(len(experts), 2)
+        self.assertIn("stages=[Inference > Decoder > Layer0 > MoE > ExpertDispatch]", experts[0])
+        self.assertIn("%p_model_layers_0_mlp_experts_gate_up_proj Tensor", experts[0])
+        self.assertIn("%p_model_layers_0_mlp_experts_down_proj Tensor", experts[0])
+        routing = [line for line in output.splitlines() if " op=" in line and "Routing]" in line]
+        indices = next(line for line in routing if "op=_operator.getitem(" in line and ", 1) -> " in line).split(" -> ")[1].split()[0]
+        scores = next(line for line in routing if "op=torch.nn.functional.softmax" in line).split(" -> ")[1].split()[0]
+        self.assertIn(indices, experts[0])
+        self.assertIn(scores, experts[0])
+        self.assertEqual(output.count(" op=torch.nn.functional.embedding("), 1)
+        for stage in ("AttentionMask", "PositionalEncoding", "AttentionNormalization", "QueryProjection",
+                      "KeyProjection", "ValueProjection", "RotaryPositionEncoding", "KVCacheUpdate",
+                      "AttentionCore", "AttentionOutputPreparation", "AttentionOutputProjection", "AttentionResidual", "MLPNormalization",
+                      "Routing", "ExpertDispatch", "MLPResidual", "FinalNormalization", "OutputProjection"):
+            self.assertIn(stage + "]", output, stage)
+        self.assertIn("TransformerBlock [model.layers.0] type=GptOssDecoderLayer", output)
+        shaping = [line for line in output.splitlines() if " op=" in line and "Reshape [model.layers.0.self_attn]" in line]
+        self.assertTrue(any("Attention > QueryProjection]" in line for line in shaping))
+        self.assertRegex(experts[0], r"^\s{10}\[step \d+\]")
+        self.assertNotRegex(output, r"dtype=(?:torch\.)?(?:bfloat|float)\w*")
+
+    def test_compile_and_aten_flags_are_rejected_before_loading(self):
+        result = subprocess.run(
+            [sys.executable, "-m", "model_graph", "unused/model", "--compile", "--format", "aten"],
+            text=True, capture_output=True, timeout=30,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("cannot be combined", result.stderr)
+        self.assertNotIn("Loading configuration", result.stderr)
+
+    @unittest.skipUnless(hasattr(transformers, "GptOssConfig"), "Requires gpt-oss support")
+    def test_cuda_serving_decode_has_packed_qkv_and_native_stage_contracts(self):
+        config = transformers.GptOssConfig(
+            vocab_size=64, hidden_size=16, intermediate_size=32,
+            num_hidden_layers=2, num_attention_heads=2, num_key_value_heads=1,
+            head_dim=8, num_local_experts=4, num_experts_per_tok=2,
+            sliding_window=4, layer_types=["sliding_attention", "full_attention"],
+            quantization_config={"quant_method": "mxfp4"},
+        )
+        output = self.run_compiled(config, "decode", ("--compile-backend", "cuda-serving"))
+        self.assertIn("independent of host device", output)
+        self.assertIn("not a measured kernel graph", output)
+        self.assertIn("logical active tokens", output)
+        projections = [line for line in output.splitlines() if "qkv_proj]" in line and " op=" in line]
+        self.assertEqual(len(projections), 2)
+        self.assertIn("covers=[QueryProjection, KeyProjection, ValueProjection]", projections[0])
+        self.assertIn("Tensor(shape=(32, 16))", projections[0])
+        self.assertIn("Tensor(shape=(2, 1, 32))", projections[0])
+        self.assertNotIn("self_attn.q_proj]", output)
+        self.assertNotIn("self_attn.k_proj]", output)
+        self.assertNotIn("self_attn.v_proj]", output)
+        self.assertEqual(output.count(" op=model_graph.native_attention.default("), 2)
+        self.assertEqual(output.count(" op=model_graph.expert_dispatch.default("), 2)
+        self.assertIn("covers=[RotaryPositionEncoding, KVCacheUpdate]", output)
+        self.assertIn("covers=[ResidualAdd, Normalization]", output)
+        self.assertIn("Tensor(shape=(2, 1, 9, 8))", output)
+        self.assertIn("cache_input past_key_values.layers.0.keys -> Tensor(shape=(2, 1, 8, 8))", output)
+        self.assertIn("Tensor(shape=(2, 1, 64))", output.splitlines()[-1])
+        self.assertNotRegex(output, r"dtype=(?:torch\.)?(?:bfloat|float)\w*")
+
+    @unittest.skipUnless(hasattr(transformers, "GptOssConfig"), "Requires gpt-oss support")
+    def test_cuda_serving_prefill_does_not_expose_cache_state(self):
+        config = transformers.GptOssConfig(vocab_size=64, hidden_size=16, intermediate_size=32,
+            num_hidden_layers=1, num_attention_heads=2, num_key_value_heads=1, head_dim=8,
+            num_local_experts=4, num_experts_per_tok=2, layer_types=["full_attention"])
+        output = self.run_compiled(config, extra_args=("--compile-backend", "cuda-serving"))
+        self.assertNotIn("cache_input", output)
+        self.assertNotIn("%updated_past_key_values", output)
+        self.assertIn("Tensor(shape=(2, 8, 64))", output.splitlines()[-1])
+
+    def test_cuda_serving_requires_compile_and_rejects_unsupported_architecture(self):
+        result = subprocess.run([sys.executable, "-m", "model_graph", "unused/model",
+            "--compile-backend", "cuda-serving"], text=True, capture_output=True, timeout=30)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("requires --compile", result.stderr)
+        with tempfile.TemporaryDirectory() as directory:
+            LlamaConfig(vocab_size=64, hidden_size=16, intermediate_size=32,
+                num_hidden_layers=1, num_attention_heads=2).save_pretrained(directory)
+            result = subprocess.run([sys.executable, "-m", "model_graph", directory,
+                "--compile", "--compile-backend", "cuda-serving", "--local-files-only"],
+                text=True, capture_output=True, timeout=30)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("currently supports gpt-oss", result.stderr)
+
+    @unittest.skipUnless(hasattr(transformers, "GptOssConfig"), "Requires gpt-oss support")
+    def test_cuda_serving_adapter_rejects_numeric_execution(self):
+        from cuda_serving_graph import CudaServingForCausalLM
+        config = transformers.GptOssConfig(vocab_size=64, hidden_size=16, intermediate_size=32,
+            num_hidden_layers=1, num_attention_heads=2, num_key_value_heads=1, head_dim=8,
+            num_local_experts=4, num_experts_per_tok=2, layer_types=["full_attention"])
+        with torch.device("meta"):
+            model = CudaServingForCausalLM(config)
+        with self.assertRaisesRegex(ValueError, "shape tensors only"):
+            model(input_ids=torch.ones(2, 1, dtype=torch.long), position_ids=torch.zeros(2, 1, dtype=torch.long))
+
+    def test_compiled_format_preserves_reused_modules_and_dependency_edges(self):
+        from compiled_graph import CompiledGraph
+
+        class Reused(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.projection = torch.nn.Linear(4, 4, bias=False)
+                self.norm = torch.nn.LayerNorm(4)
+
+            def forward(self, x):
+                return self.projection(self.norm(x + self.projection(x)))
+
+        with torch.device("meta"):
+            graph = CompiledGraph(Reused().eval()).trace({"x": torch.empty(2, 3, 4)})
+        stream = io.StringIO()
+        graph.print(stream)
+        output = stream.getvalue()
+        self.assertEqual(output.count("Linear [projection] type=Linear"), 2)
+        operations = [line for line in output.splitlines() if " op=" in line]
+        self.assertEqual(len(operations), sum(node.op not in ("placeholder", "output")
+                                             for node in graph.graph_module.graph.nodes))
+        declared = set()
+        for line in output.splitlines():
+            if line.startswith("%") and " = " in line:
+                declared.add(line.split()[0])
+            if " op=" in line:
+                inputs, outputs = line.split(" -> ", 1)
+                self.assertTrue(set(re.findall(r"%\w+", inputs)) <= declared, line)
+                declared.update(re.findall(r"%\w+", outputs))
+            if line.startswith("return "):
+                self.assertTrue(set(re.findall(r"%\w+", line)) <= declared, line)
+        additions = [line for line in operations if " op=add(" in line or " op=_operator.add(" in line]
+        self.assertEqual(len(additions), 1)
+        self.assertIn("%x Tensor(shape=(2, 3, 4)", additions[0])
+        self.assertIn("stages=[Inference > Functional]", additions[0])
+
+    def test_graph_break_fails_and_restores_expert_forward(self):
+        from compiled_graph import CompiledGraph
+
+        class GptOssExperts(torch.nn.Module):
+            def forward(self, hidden_states, router_indices=None, routing_weights=None):
+                raise AssertionError("The shape contract should replace this forward")
+
+        class DataDependent(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.experts = GptOssExperts()
+
+            def forward(self, x):
+                return self.experts(x)[:int(x.sum().item())]
+
+        with torch.device("meta"):
+            model = DataDependent()
+            original = model.experts.forward.__func__
+            with self.assertRaises(Exception):
+                CompiledGraph(model).trace({"x": torch.empty(4)})
+        self.assertIs(model.experts.forward.__func__, original)
+        self.assertNotIn("forward", vars(model.experts))
+
+
 class DtypeResolutionTests(unittest.TestCase):
     def test_nested_and_legacy_config(self):
         class Config:

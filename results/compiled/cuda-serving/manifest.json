@@ -1,0 +1,450 @@
+{
+  "batch": 32,
+  "cached_context": 8192,
+  "query_tokens": 1,
+  "generator_sha256": "8497f3da885ace3980e8db9558ffa591b5195efa8c30a64b0edca57ddf883d94",
+  "runs": [
+    {
+      "model_id": "zai-org/GLM-4.5-Base",
+      "revision": "922a0cee7f137cf3b64c186f0bee77882e4a4e80",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "a5dbd07371a8a51b0013a63a7a70543a7094af1a9598812b537133e6da78dda7",
+      "source_graph": "results/decode/zai-org--GLM-4.5-Base.txt",
+      "source_sha256": "023b885cff51f2da9f6281acbfadf7ed6a0f8adb548caa5d8c20afa76d7ad3e5",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "PackedQKVProjection": 92,
+        "NativeAttentionBoundary": 92,
+        "FusedAddRMSNorm": 93
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/zai-org--GLM-4.5-Base.txt",
+      "graph_sha256": "9b1e59259371a1a10ec917524579d49a45542e6b71b0a6c25b222a151ff20de6",
+      "steps": 2289
+    },
+    {
+      "model_id": "zai-org/GLM-4.5-Air-Base",
+      "revision": "888c873d4eca81f28d0ef420aa2d96457c28b959",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "e59f21d7be4b4b917d80bb3a2d1211356d29cf3aeff93372523daf7d0ffb839d",
+      "source_graph": "results/decode/zai-org--GLM-4.5-Air-Base.txt",
+      "source_sha256": "5bda1237bf3ac67e57c3741f6c53c3c6a785be7b365af8bd5044e0e598805622",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "PackedQKVProjection": 46,
+        "NativeAttentionBoundary": 46,
+        "FusedAddRMSNorm": 47
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/zai-org--GLM-4.5-Air-Base.txt",
+      "graph_sha256": "694ef9f2b9619571a01949d332d4ad6bb8df8b53038c099b93f0ac625144e5b6",
+      "steps": 1013
+    },
+    {
+      "model_id": "zai-org/GLM-5",
+      "revision": "c183ef8c61faee82855eca1ed9bb3a9a7ce3b0b2",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "308d3ceebe7bd9c2246d20550d5b793098dd03838d1e504f8236063ae152bcae",
+      "source_graph": "results/decode/zai-org--GLM-5.txt",
+      "source_sha256": "771c74c5919ecb177c2e0a12dde36ec7016971f3ea3f63596bf4b8276be52bbd",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeAttentionBoundary": 234,
+        "FusedAddRMSNorm": 79
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/zai-org--GLM-5.txt",
+      "graph_sha256": "14c405503e95a779e17b2917ee0ea3246dd06c43a1fb05a059d268c40ee85916",
+      "steps": 2875
+    },
+    {
+      "model_id": "zai-org/GLM-5.3",
+      "revision": "aca966e4e02791568aa6a4ced368624b3d897f42",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "3ac72612095574542f7fff847ada8e59d9199dd8af44bdf625d7e02615572e69",
+      "source_graph": "results/decode/zai-org--GLM-5.3.txt",
+      "source_sha256": "904f8a759575eaa682a29ae2cfc9766a4ac4b8be54de0ccbd5a910af820b3203",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeAttentionBoundary": 120,
+        "FusedAddRMSNorm": 79
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/zai-org--GLM-5.3.txt",
+      "graph_sha256": "50f698464b3794412c7c13c8e47c8bba3743617840ed7736f6cb9557d1c47040",
+      "steps": 2362
+    },
+    {
+      "model_id": "zai-org/GLM-5.3-Flash",
+      "revision": "eb9eb208eb0d988989d07a6a12d0fdeb5f52574a",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "bb8f01c42cb92a52ca72e65afb4d5bd8d11aef083cd210e8de25dfb904f23e9f",
+      "source_graph": "results/decode/zai-org--GLM-5.3-Flash.txt",
+      "source_sha256": "d6978bb7aad6dad74f91e128a34b28cd19916454832af8e3c4c626fb93128d49",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeAttentionBoundary": 56,
+        "PackedQKVProjection": 34,
+        "NativeRecurrentBoundary": 34
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/zai-org--GLM-5.3-Flash.txt",
+      "graph_sha256": "f67fb73831d6a11ac96db3df7beb8eaed9c7900ee1d439b3b3dd4e9d4a8350d4",
+      "steps": 1857
+    },
+    {
+      "model_id": "moonshotai/Kimi-K3",
+      "revision": "f831ab66814297da540d832a5235f8e904f29d06",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "9710e121a58d03ac92c8d6da287a19541994319afbbe6d6202af001ffd379213",
+      "source_graph": "results/decode/moonshotai--Kimi-K3.txt",
+      "source_sha256": "9cb9549487605a66644782c3d4236c75280444be0d58e53c19763a7c633ff51f",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "PackedQKVProjection": 69,
+        "NativeAttentionBoundary": 210
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/moonshotai--Kimi-K3.txt",
+      "graph_sha256": "5a5f57c443633bf66f3f996b74b34678be5ee55cfc68dafd4b45a5946a1b36d5",
+      "steps": 3925
+    },
+    {
+      "model_id": "moonshotai/Kimi-K2-Base",
+      "revision": "ce72df012259dcc55d945e890f815fe7ef69159c",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "8c13ae1049df55f29b3bdcae69a562433f243ff70dac251d819ecad8dbdf7439",
+      "source_graph": "results/decode/moonshotai--Kimi-K2-Base.txt",
+      "source_sha256": "74df72e0eeb11411deca71332d03a219b53bb30a4ef22afbac70bba6af021352",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeAttentionBoundary": 61,
+        "FusedAddRMSNorm": 62
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/moonshotai--Kimi-K2-Base.txt",
+      "graph_sha256": "60fb4a66b34fd06e92c2c7f2e69346ee316b258ba047d735055f865044296271",
+      "steps": 1709
+    },
+    {
+      "model_id": "moonshotai/Kimi-Linear-48B-A3B-Base",
+      "revision": "3b171c17bfc4ee348599b6781a2ca8715c21c8dc",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "732c453928a14df15ad7b7bf8c626a02236d10eee80ce63a36aa05df73bc17eb",
+      "source_graph": "results/decode/moonshotai--Kimi-Linear-48B-A3B-Base.txt",
+      "source_sha256": "e42f6976fff9e306376171d159eff145e751563920174b4bb2324c2a18ed0945",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "PackedQKVProjection": 20,
+        "NativeRecurrentBoundary": 20,
+        "FusedAddRMSNorm": 28,
+        "NativeAttentionBoundary": 7
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/moonshotai--Kimi-Linear-48B-A3B-Base.txt",
+      "graph_sha256": "60a4759a8b4f893e4adc65ff4fafbb158d46e9bab85bda0c48766cdc9fe6c364",
+      "steps": 802
+    },
+    {
+      "model_id": "Qwen/Qwen3.8-2.4T-A95B",
+      "revision": "207bd685a7e3696cfaff12ded7c6a7ea0f88c996",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "4e3819548967e319ab435d044a3a331dbe3b078590ce822e9d74b79430533987",
+      "source_graph": "results/decode/Qwen--Qwen3.8-2.4T-A95B.txt",
+      "source_sha256": "db5cc92ba378026996fd2531c72465378c0b58cb57f5516e282bcc74534bb2f8",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeRecurrentBoundary": 69,
+        "FusedAddRMSNorm": 93,
+        "PackedQKVProjection": 23,
+        "NativeAttentionBoundary": 23
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/Qwen--Qwen3.8-2.4T-A95B.txt",
+      "graph_sha256": "e1dcfec89af51ed326a60ddabc4a3f00d523c26b32d97d2ce2a28d62003f1446",
+      "steps": 2468
+    },
+    {
+      "model_id": "Qwen/Qwen3.8-Flash-Next",
+      "revision": "de4b8e4d43b917e7706784d8bb445c9af86a3540",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "889658f2508e8c61d409b02e70e0d78d8d4452ec65aaafbe129805d213d2e74b",
+      "source_graph": "results/decode/Qwen--Qwen3.8-Flash-Next.txt",
+      "source_sha256": "2307fcea530ec19829044b986d3d3c168499763dc71796eed90ac34b37d7f233",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeRecurrentBoundary": 36,
+        "PackedQKVProjection": 12,
+        "NativeAttentionBoundary": 12
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/Qwen--Qwen3.8-Flash-Next.txt",
+      "graph_sha256": "fa974192fa69dffcfc05891a551026008142584c4ecd3e658ae8bd19b5fd1b55",
+      "steps": 2058
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V3-Base",
+      "revision": "afb92e1fa402c2be2a9eb085312bb02e0384d6c7",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "cbf0b95dc614de208a109bb5fd4e7eed11385e9c68411d2c17db5319443035d9",
+      "source_graph": "results/decode/deepseek-ai--DeepSeek-V3-Base.txt",
+      "source_sha256": "7d09595cd30bf312d684a945c2d8b330425411a22e77b9a2ee91ec1a2030b91d",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeAttentionBoundary": 61,
+        "FusedAddRMSNorm": 62
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/deepseek-ai--DeepSeek-V3-Base.txt",
+      "graph_sha256": "e90558c82ab7705e4ed8fae80adc290f289be9afe507badd871afdb6d592945d",
+      "steps": 1697
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V3.2",
+      "revision": "a7e62ac04ecb2c0a54d736dc46601c5606cf10a6",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "c7fa8b191e9936d8e6a57d864baab82b792fae16a116416cdd3a75ba76bc5af1",
+      "source_graph": "results/decode/deepseek-ai--DeepSeek-V3.2.txt",
+      "source_sha256": "20d7bb14f7955c6d6b52610f17135bb6735b33582be16bc1496b85b0ba5f0ef4",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeAttentionBoundary": 183,
+        "FusedAddRMSNorm": 62
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/deepseek-ai--DeepSeek-V3.2.txt",
+      "graph_sha256": "2578d90d0f093ef1b807b99b2875afd04cd4ffeb180fa3c136238ed02e22ca54",
+      "steps": 2246
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V4-Pro-Base",
+      "revision": "98730c030fbdbaca4950788280a35c4642b208a9",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "718c188325de5ec90885a2782990b6e49fe773ef701c3aed03c55c8c21b99059",
+      "source_graph": "results/decode/deepseek-ai--DeepSeek-V4-Pro-Base.txt",
+      "source_sha256": "b817b4150431a4a9ffb20dbf0dbcadc86b25e3b243839e9f2de6335857817304",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeAttentionBoundary": 152
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/deepseek-ai--DeepSeek-V4-Pro-Base.txt",
+      "graph_sha256": "5ecfb7bb06937405e342c7276bdcb3020ef89049361c0e3d54f1280ec63793f2",
+      "steps": 3331
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V4-Flash-Base",
+      "revision": "8855555deef230a27a21a8d6f294b7b7497759b6",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "90c592a2dc666e9352a9bc28387414486f074351c7f57a1028bd528e0d0243bc",
+      "source_graph": "results/decode/deepseek-ai--DeepSeek-V4-Flash-Base.txt",
+      "source_sha256": "b95b631f80fe373e668a047405113b89c067ac2bec6cc06899c2d42f3a337af5",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeAttentionBoundary": 107
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/deepseek-ai--DeepSeek-V4-Flash-Base.txt",
+      "graph_sha256": "fe81f1c1b765667454b4ab7438ca70da8ab94dae54da324f2c2e6811dd26feb6",
+      "steps": 2340
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "8be45ce0476004a3f529fd896115a4a2e800a129ad2d3ec05b16050f52e21879",
+      "status": "unsupported",
+      "error": "model-graph: ValueError: The checkpoint you are trying to load has model type `deepseek_v41` but Transformers does not recognize this architecture. This could be because of an issue with the checkpoint, or because your version of Transformers is out of date."
+    },
+    {
+      "model_id": "MiniMaxAI/MiniMax-M3",
+      "revision": "f0e1c1e04d40177e4673a22097036854f536e9c0",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "c9c97ce1e4eece60012d5a10ea87717458bfb1f19c2c7a615a3dbff83d090c6b",
+      "source_graph": "results/decode/MiniMaxAI--MiniMax-M3.txt",
+      "source_sha256": "8db36d19408e7d4f56135be2b98ddead4186571efafc74df1fc32f1172d8958f",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "PackedQKVProjection": 60,
+        "NativeAttentionBoundary": 117,
+        "FusedAddRMSNorm": 61
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/MiniMaxAI--MiniMax-M3.txt",
+      "graph_sha256": "460d549b4d4648e63d5a718e255fb79f6b7e2a70d16f6ec0ca489b5e667e0559",
+      "steps": 1942
+    },
+    {
+      "model_id": "MiniMaxAI/MiniMax-M2.7",
+      "revision": "d494266a4affc0d2995ba1fa35c8481cbd84294b",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "697c30492781d55ac516011f937b5cdec045710b5b0c9ca39a6ea277785df9aa",
+      "source_graph": "results/decode/MiniMaxAI--MiniMax-M2.7.txt",
+      "source_sha256": "d76debc3400b32a9e9a1eb3e13e65d7da93a5796caca2797bc093a2c33a16f22",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "PackedQKVProjection": 62,
+        "NativeAttentionBoundary": 62,
+        "FusedAddRMSNorm": 63
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/MiniMaxAI--MiniMax-M2.7.txt",
+      "graph_sha256": "9e9d444a5625382994c9079c0b942481f02f79ca435a4c6e11634abf81ff8b16",
+      "steps": 937
+    },
+    {
+      "model_id": "openai/gpt-oss-120b",
+      "revision": "b5c939de8f754692c1647ca79fbf85e8c1e70f8a",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "933aeb666a3fd851133ddd7686414f369bc564c4185fb5704416550879f10566",
+      "source_graph": "results/decode/openai--gpt-oss-120b.txt",
+      "source_sha256": "6ee73384c6e3a6fc3f8c451ad7ff89fdaeed46a0c14715ac82846d7651970ad9",
+      "method": "config-only serving adapter / torch.compile FX",
+      "adapter_metadata": "results/compiled/cuda-serving/gpt-oss-decode.json",
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/openai--gpt-oss-120b.txt",
+      "graph_sha256": "3c83345071535b982a7e2708442e98b762eefedf0941461b1575577828d1d09f",
+      "steps": 1269
+    },
+    {
+      "model_id": "Qwen/Qwen3.8-27B",
+      "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+      "source_graph": "results/decode/Qwen--Qwen3.8-27B.txt",
+      "source_sha256": "485bf4b63c05915dd13f1620a8d0daa83f9c812e3893f0f064249f68b4b015e7",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeRecurrentBoundary": 48,
+        "FusedAddRMSNorm": 65,
+        "PackedQKVProjection": 16,
+        "NativeAttentionBoundary": 16
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/Qwen--Qwen3.8-27B.txt",
+      "graph_sha256": "c1fd6b00fb405f7b8be91945b8abf4a50c97d8923cdf7de9eb2f5dfaf1cbe063",
+      "steps": 1335
+    },
+    {
+      "model_id": "Qwen/Qwen3.8-27B-FP8",
+      "revision": "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "74227dd615bf1ea975aa676bdf355a0379858c12f394b5365cd9dfa5fc2c70bc",
+      "source_graph": "results/decode/Qwen--Qwen3.8-27B-FP8.txt",
+      "source_sha256": "47616f0d8435005c67be93a1b6c9d568a01685c146117841f6d2bde245493005",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeRecurrentBoundary": 48,
+        "FusedAddRMSNorm": 65,
+        "PackedQKVProjection": 16,
+        "NativeAttentionBoundary": 16
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/Qwen--Qwen3.8-27B-FP8.txt",
+      "graph_sha256": "3a4ae86d76625e5f228facc2196d1ef0c171f78280f2dd46167a5327940f0c9a",
+      "steps": 1335
+    },
+    {
+      "model_id": "Qwen/Qwen3.5-397B-A17B",
+      "revision": "8472618112abcbd45acbcdc58436aff4233c23f7",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "3ae7fa89c2f7d1354096418ddaf1331e9e0898a8ca11e804fb6dbaa087efb7da",
+      "source_graph": "results/decode/Qwen--Qwen3.5-397B-A17B.txt",
+      "source_sha256": "3033049af071d65a8f46b8b68863cac8b26d48f44bb1141dd2da2164a808c6de",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeRecurrentBoundary": 45,
+        "FusedAddRMSNorm": 61,
+        "PackedQKVProjection": 15,
+        "NativeAttentionBoundary": 15
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/Qwen--Qwen3.5-397B-A17B.txt",
+      "graph_sha256": "d95100d8ac6cee7d087f703e7d149a774d0b99612d373e7e08cb418bcacc5cb6",
+      "steps": 1612
+    },
+    {
+      "model_id": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "revision": "9c7f2fbe84465e40164a94cc16cd30b6999b0cc7",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "2d483c7cabad7c8704478ed4038fa7e7b2eff840bc00a118eccbe38e2b488303",
+      "source_graph": "results/decode/Qwen--Qwen3-Next-80B-A3B-Instruct.txt",
+      "source_sha256": "96f87d4be0106d22c2337dc681f013c38e46681e889216f938a83f78b48b04c0",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "NativeRecurrentBoundary": 36,
+        "FusedAddRMSNorm": 49,
+        "PackedQKVProjection": 12,
+        "NativeAttentionBoundary": 12
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/Qwen--Qwen3-Next-80B-A3B-Instruct.txt",
+      "graph_sha256": "6e261dfda90eb946e42fc9b53ffabbd9172b1494eec9648772fb15d9e187be11",
+      "steps": 1147
+    },
+    {
+      "model_id": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "revision": "ac9c66cc9b46af7306746a9250f23d47083d689e",
+      "phase": "decode",
+      "cuda_kernel_capture": false,
+      "cuda_fusion_validated": false,
+      "config_sha256": "ad59a339665ee1c68cbff06ac72c9e59f5183ebfaf3698c98737e003a870e9e2",
+      "source_graph": "results/decode/Qwen--Qwen3-235B-A22B-Instruct-2507.txt",
+      "source_sha256": "926cff58e370820097b6047f30d1800c0f004fe8985d78e59932a7c5f15f8213",
+      "method": "rule-based source trace estimate",
+      "boundary_counts": {
+        "PackedQKVProjection": 94,
+        "NativeAttentionBoundary": 94,
+        "FusedAddRMSNorm": 95
+      },
+      "status": "success",
+      "graph": "results/compiled/cuda-serving/decode/Qwen--Qwen3-235B-A22B-Instruct-2507.txt",
+      "graph_sha256": "e3abda12adfe4465d8f2f404610c00b6e2ae4d8b61f835828206cb1a18952aa3",
+      "steps": 1793
+    }
+  ]
+}

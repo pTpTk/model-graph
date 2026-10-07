@@ -10,6 +10,8 @@ import subprocess
 import sys
 import time
 
+from results_documentation import update_index
+
 
 ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "results"
@@ -114,7 +116,7 @@ def render_index(catalog, records):
                 lines.append(f"- **{entry['model_id']}**: {reason}")
     lines += ["", "Regenerate with `python generate_results.py`; use `--model OWNER/NAME` to select an entry.",
               "Successful outputs are retained unless `--force` is supplied. Failed entries are retried."]
-    (RESULTS/"README.md").write_text("\n".join(lines)+"\n")
+    update_index("model-results", "\n".join(lines)+"\n", RESULTS)
 
 
 def main():

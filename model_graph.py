@@ -102,29 +102,35 @@ def describe(value, show_floating_dtype=True):
 
 
 def print_graph(program, stream, show_floating_dtype=True):
-    specs = {
-        spec.arg.name: spec
-        for spec in program.graph_signature.input_specs
-        if hasattr(spec.arg, "name")
-    }
+    labels = {}
+    constants = {}
+    for spec in program.graph_signature.input_specs:
+        if hasattr(spec.arg, "name"):
+            label = spec.kind.name.lower()
+            if spec.target is not None:
+                label += f" {spec.target}"
+            labels[spec.arg.name] = label
+            if hasattr(spec.arg, "value"):
+                constants[spec.arg.name] = spec.arg.value
+    print_fx_graph(program.graph_module, stream, show_floating_dtype, labels, constants)
 
-    for node in program.graph_module.graph.nodes:
+
+def print_fx_graph(graph_module, stream, show_floating_dtype=True, labels=None, constants=None):
+    """Print export or compiler FX nodes, including their shape metadata."""
+    labels = labels or {}
+    constants = constants or {}
+
+    for node in graph_module.graph.nodes:
         metadata = node.meta
+        value = metadata.get("val", metadata.get("example_value", constants.get(node.name)))
         result = (
-            describe(metadata["val"], show_floating_dtype)
-            if "val" in metadata
+            describe(value, show_floating_dtype)
+            if "val" in metadata or "example_value" in metadata or node.name in constants
             else "?"
         )
 
         if node.op == "placeholder":
-            spec = specs.get(node.name)
-            label = "input"
-            if spec is not None:
-                label = spec.kind.name.lower()
-                if spec.target is not None:
-                    label += f" {spec.target}"
-                if "val" not in metadata and hasattr(spec.arg, "value"):
-                    result = describe(spec.arg.value, show_floating_dtype)
+            label = labels.get(node.name, "input")
             line = f"%{node.name} = {label} -> {result}"
 
         elif node.op == "output":
@@ -136,8 +142,11 @@ def print_graph(program, stream, show_floating_dtype=True):
                 f"{key}={describe(value, show_floating_dtype)}"
                 for key, value in node.kwargs.items()
             )
+            target = node.target
+            if callable(target) and not isinstance(target, torch._ops.OpOverload):
+                target = f"{target.__module__}.{target.__name__}"
             line = (
-                f"%{node.name} = {node.target}"
+                f"%{node.name} = {target}"
                 f"({', '.join(arguments)}) -> {result}"
             )
 
@@ -220,6 +229,12 @@ class NativeTextCausalLM(torch.nn.Module):
 def construct_model(config, factory, args, dtype_options):
     """Select native text support when a multimodal parent has no causal mapping."""
     text = config.get_text_config()
+    if args.compile_backend == "cuda-serving":
+        if args.task != "causal-lm" or text.model_type != "gpt_oss":
+            raise ValueError("--compile-backend cuda-serving currently supports gpt-oss causal-LM configs")
+        from cuda_serving_graph import CudaServingForCausalLM
+        model = CudaServingForCausalLM(text, dtype_options.get("dtype", dtype_options.get("torch_dtype")))
+        return model, "Config-only CUDA serving adapter: packed QKV, fused residual/RMSNorm and native operation shape contracts; logical KV dimensions; no measured kernel launches or quantized storage layouts."
     if type(config).__name__ == "KimiK3TextConfig":
         if args.task != "causal-lm" or args.format != "modules":
             raise ValueError("Kimi K3 adapter requires --task causal-lm and --format modules")
@@ -281,6 +296,11 @@ def main():
         "--format", choices=("modules", "aten"), default="modules",
         help="model modules with dimensions (default), or detailed torch.export operations",
     )
+    parser.add_argument("--compile", action="store_true",
+                        help="capture a full Transformers torch.compile FX graph before backend "
+                             "lowering; shape-only, not CUDA kernel launches")
+    parser.add_argument("--compile-backend", choices=("fx", "cuda-serving"), default="fx",
+                        help="Transformers FX (default), or config-only gpt-oss CUDA serving operations")
     parser.add_argument("--revision", default="main")
     parser.add_argument("--local-files-only", action="store_true")
     parser.add_argument(
@@ -289,6 +309,10 @@ def main():
         help="allow execution of custom code from the model repository",
     )
     args = parser.parse_args()
+    if args.compile_backend != "fx" and not args.compile:
+        parser.error("--compile-backend requires --compile")
+    if args.compile and args.format != "modules":
+        parser.error("--compile selects compiler FX output and cannot be combined with --format aten")
     if args.phase == "decode" and (args.task != "causal-lm" or args.format != "modules"):
         parser.error("decode currently requires --task causal-lm and --format modules")
 
@@ -363,7 +387,11 @@ def main():
                     warmup_inputs["cache_position"] = torch.arange(args.seq_len, dtype=torch.long)
                     inputs["cache_position"] = torch.arange(args.seq_len, args.seq_len + 1, dtype=torch.long)
 
-            if args.format == "modules":
+            if args.compile:
+                from compiled_graph import CompiledGraph
+                with progress("Capturing torch.compile FX graph with shape-only tensors"):
+                    program = CompiledGraph(model, show_floating_dtype).trace(inputs, warmup_inputs)
+            elif args.format == "modules":
                 stage = "Preparing cache shapes and recording one-token decode" if args.phase == "decode" else "Recording model operations with shape-only tensors"
                 with progress(stage):
                     program = ModuleGraph(model, show_floating_dtype=show_floating_dtype).trace(inputs, warmup_inputs)
@@ -405,7 +433,18 @@ def main():
     else:
         print(f"# Prefill: query_tokens={args.seq_len}, past_tokens=0; cache output disabled.")
     print("# Inference forward pass; all tokens valid.")
-    if args.format == "modules":
+    if args.compile:
+        print("# torch.compile FX graph; fullgraph=True, dynamic=False; no backend kernel lowering.")
+        if args.compile_backend == "cuda-serving":
+            print("# CUDA serving operation contracts: packed QKV and fused native stages; independent of host device.")
+            print("# Native contracts may cover multiple CUDA launches; this is not a measured kernel graph.")
+            print("# KV cache shapes describe logical active tokens, not an allocated paged cache pool.")
+        else:
+            print("# Source runtime: Hugging Face Transformers; graph level: Dynamo FX before backend lowering.")
+            print("# Numbered operation steps are FX nodes, not CUDA kernel launches; CUDA fusion is not captured.")
+        print("# Shapes only: tensor values are not computed on CPU or GPU.")
+        program.print(sys.stdout)
+    elif args.format == "modules":
         print("# Model operations; nested steps belong to their parent module.")
         print("# Shapes only: tensor values are not computed on CPU or GPU.")
         program.print(sys.stdout)
